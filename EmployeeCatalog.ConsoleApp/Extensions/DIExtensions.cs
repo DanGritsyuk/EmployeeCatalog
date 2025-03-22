@@ -14,6 +14,8 @@ namespace EmployeeCatalog.ConsoleApp.Extensions
     {
         public static IServiceCollection ConfigureServices(this IServiceCollection services, string[] args)
         {
+            
+
             // Парсинг аргументов командной строки
             Dictionary<string, string> arguments = CommandLineArgumentsParser.Parse(args);
             services.AddSingleton(arguments);

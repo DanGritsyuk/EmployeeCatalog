@@ -5,21 +5,17 @@ using MongoDB.Driver;
 
 namespace EmployeeCatalog.DAL.Repository
 {
-
-
     public class EmployeeRepository : IEmployeeRepository
     {
         private static readonly SemaphoreSlim _semaphore = new SemaphoreSlim(100);
 
         private readonly IMongoCollection<Employee> _employees;
-        //private readonly EmployeeBdContext _context;
         private readonly IMongoClient _client;
 
-        public EmployeeRepository(IMongoDatabase database) // EmployeeBdContext context
+        public EmployeeRepository(IMongoDatabase database)
         {
             _employees = database.GetCollection<Employee>("Employees");
-            //_context = context;
-            _client = database.Client; // Получаем клиент из базы данных
+            _client = database.Client;
         }
 
         public async Task CreateTableAsync()
@@ -33,6 +29,14 @@ namespace EmployeeCatalog.DAL.Repository
             {
                 await _employees.Database.CreateCollectionAsync("Employees");
                 Console.WriteLine("Collection 'Employees' created.");
+
+                var compoundIndexKeys = Builders<Employee>.IndexKeys
+                    .Ascending(e => e.Gender)
+                    .Ascending(e => e.FullName);
+
+                await _employees.Indexes.CreateOneAsync(new CreateIndexModel<Employee>(compoundIndexKeys));
+
+                Console.WriteLine("Compound index created on 'Gender' and 'FullName' fields.");
             }
             else
             {
@@ -56,7 +60,11 @@ namespace EmployeeCatalog.DAL.Repository
         {
             try
             {
-                var query = _employees.Find(filter);
+                var projection = Builders<Employee>.Projection
+                    .Include(e => e.FullName)
+                    .Include(e => e.BirthDate);
+
+                var query = _employees.Find(filter).Project<Employee>(projection);
                 if (sort != null)
                 {
                     query = query.Sort(sort);
@@ -83,9 +91,9 @@ namespace EmployeeCatalog.DAL.Repository
 
         public async Task BulkInsertAsync(IEnumerable<Employee> employees)
         {
-                if (employees == null || employees.Count() == 0) return;
-                await ExecuteInTransactionAsync(employees, (session, employees) =>
-                _employees.InsertManyAsync(session, employees));
+            if (employees == null || employees.Count() == 0) return;
+            await ExecuteInTransactionAsync(employees, (session, employees) =>
+            _employees.InsertManyAsync(session, employees));
         }
 
         public async Task AddEmployeeWithEventAsync(Employee employee) =>
@@ -121,16 +129,16 @@ namespace EmployeeCatalog.DAL.Repository
         {
             using var session = await _client.StartSessionAsync();
             await _semaphore.WaitAsync();
-            //session.StartTransaction();
+            session.StartTransaction();
 
             try
             {
                 await operation(session, items);
-                //await session.CommitTransactionAsync();
+                await session.CommitTransactionAsync();
             }
             catch
             {
-                //await session.AbortTransactionAsync();
+                await session.AbortTransactionAsync();
                 throw;
             }
             finally

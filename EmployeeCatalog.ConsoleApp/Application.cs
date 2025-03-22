@@ -2,7 +2,6 @@
 using EmployeeCatalog.Common.Entities;
 using EmployeeCatalog.Common.Entities.Enums;
 using EmployeeCatalog.ConsoleApp.Services;
-using MongoDB.Bson;
 using MongoDB.Driver;
 using System.Diagnostics;
 

@@ -1,4 +1,6 @@
-﻿using EmployeeCatalog.Common.Entities;
+﻿using EmployeeCatalog.BLL.Logic.Contracts;
+using EmployeeCatalog.Common.Entities;
+using EmployeeCatalog.Common.Entities.Enums;
 using EmployeeCatalog.DAL.Repository.Contracts;
 using MongoDB.Bson;
 using MongoDB.Driver;
