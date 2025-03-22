@@ -1,0 +1,8 @@
+{
+  "profiles": {
+    "EmployeeCatalog.ConsoleApp": {
+      "commandName": "Project",
+      "commandLineArgs": "--mode 4 --count 1000000"
+    }
+  }
+}

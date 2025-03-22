@@ -1,0 +1,14 @@
+﻿<Project Sdk="Microsoft.NET.Sdk">
+
+  <PropertyGroup>
+    <TargetFramework>net8.0</TargetFramework>
+    <ImplicitUsings>enable</ImplicitUsings>
+    <Nullable>enable</Nullable>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <ProjectReference Include="..\EmployeeCatalog.Common.Entities\EmployeeCatalog.Common.Entities.csproj" />
+    <ProjectReference Include="..\EmployeeCatalog.DAL.Repository.Contracts\EmployeeCatalog.DAL.Repository.Contracts.csproj" />
+  </ItemGroup>
+
+</Project>
