@@ -4,7 +4,7 @@ using EmployeeCatalog.Common.Entities;
 
 namespace EmployeeCatalog.BLL.Logic.Commands
 {
-    public class FillDatabaseCommand : ICommandWithArgs<IAsyncEnumerable<IEnumerable<Employee>>>
+    public class FillDatabaseCommand : IFillDatabaseCommand<IAsyncEnumerable<IEnumerable<Employee>>>
     {
         private readonly IEmployeeRepository _employeeRepository;
 
@@ -13,7 +13,7 @@ namespace EmployeeCatalog.BLL.Logic.Commands
             _employeeRepository = employeeRepository;
         }
 
-        public async Task ExecuteAsync(IAsyncEnumerable<IEnumerable<Employee>> employeeBatches)
+        public async Task BulkInsertAsync(IAsyncEnumerable<IEnumerable<Employee>> employeeBatches)
         {
             Console.WriteLine("Start filling the database...");
 

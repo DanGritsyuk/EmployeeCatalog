@@ -7,6 +7,8 @@ using MongoDB.Bson.Serialization.Serializers;
 using MongoDB.Bson.Serialization;
 using MongoDB.Bson;
 using MongoDB.Driver;
+using EmployeeCatalog.BLL.Logic.Contracts;
+using EmployeeCatalog.Common.Entities;
 
 namespace EmployeeCatalog.ConsoleApp.Extensions
 {
@@ -26,11 +28,11 @@ namespace EmployeeCatalog.ConsoleApp.Extensions
             IMongoDatabase mongoDatabase = mongoClient.GetDatabase("EmployeeCatalog");
 
             // Регистрация команд
-            services.AddTransient<CreateTableCommand>();
-            services.AddTransient<AddEmployeeCommand>();
-            services.AddTransient<ListEmployeesCommand>();
-            services.AddTransient<FillDatabaseCommand>();
-            services.AddTransient<FilterEmployeesCommand>();
+            services.AddTransient<ICreateTableCommand, CreateTableCommand>();
+            services.AddTransient<IAddEmployeeCommand<EmployeeInputModel>, AddEmployeeCommand>();
+            services.AddTransient<IListEmployeesCommand<IAsyncEnumerable<Employee>>, ListEmployeesCommand>();
+            services.AddTransient<IFillDatabaseCommand<IAsyncEnumerable<IEnumerable<Employee>>>, FillDatabaseCommand>();
+            services.AddTransient<IFilterEmployeesCommand<EmployeeFilterCriteria, IEnumerable<Employee>>, FilterEmployeesCommand>();
 
             // Регистрация основных узлов
             services.AddSingleton<Application>();

@@ -7,7 +7,7 @@ using MongoDB.Driver;
 
 namespace EmployeeCatalog.BLL.Logic.Commands
 {
-    public class FilterEmployeesCommand : ICommandWithArgsAndResult<EmployeeFilterCriteria, IEnumerable<Employee>>
+    public class FilterEmployeesCommand : IFilterEmployeesCommand<EmployeeFilterCriteria, IEnumerable<Employee>>
     {
         private readonly IEmployeeRepository _employeeRepository;
 
@@ -16,7 +16,7 @@ namespace EmployeeCatalog.BLL.Logic.Commands
             _employeeRepository = employeeRepository;
         }
 
-        public async Task<IEnumerable<Employee>> ExecuteAsync(EmployeeFilterCriteria criteria)
+        public async Task<IEnumerable<Employee>> GetByFilterAsync(EmployeeFilterCriteria criteria)
         {
             var filter = Builders<Employee>.Filter.And(
                 Builders<Employee>.Filter.Eq(e => e.Gender, criteria.Gender),

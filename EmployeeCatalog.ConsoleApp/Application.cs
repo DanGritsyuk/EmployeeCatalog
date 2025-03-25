@@ -1,4 +1,5 @@
 ﻿using EmployeeCatalog.BLL.Logic.Commands;
+using EmployeeCatalog.BLL.Logic.Contracts;
 using EmployeeCatalog.Common.Entities;
 using EmployeeCatalog.Common.Entities.Enums;
 using EmployeeCatalog.ConsoleApp.Services;
@@ -9,20 +10,20 @@ namespace EmployeeCatalog.ConsoleApp
 {
     public class Application
     {
-        private readonly Dictionary<string, string> _arguments;
-        private readonly CreateTableCommand _createTableCommand;
-        private readonly AddEmployeeCommand _addEmployeeCommand;
-        private readonly ListEmployeesCommand _listEmployeesCommand;
-        private readonly FillDatabaseCommand _fillDatabaseCommand;
-        private readonly FilterEmployeesCommand _filterEmployeesCommand;
+        private readonly IDictionary<string, string> _arguments;
+        private readonly ICreateTableCommand _createTableCommand;
+        private readonly IAddEmployeeCommand<EmployeeInputModel> _addEmployeeCommand;
+        private readonly IListEmployeesCommand<IAsyncEnumerable<Employee>> _listEmployeesCommand;
+        private readonly IFillDatabaseCommand<IAsyncEnumerable<IEnumerable<Employee>>> _fillDatabaseCommand;
+        private readonly IFilterEmployeesCommand<EmployeeFilterCriteria, IEnumerable<Employee>> _filterEmployeesCommand;
 
         public Application(
-            Dictionary<string, string> arguments,
-            CreateTableCommand createTableCommand,
-            AddEmployeeCommand addEmployeeCommand,
-            ListEmployeesCommand listEmployeesCommand,
-            FillDatabaseCommand fillDatabaseCommand,
-            FilterEmployeesCommand filterEmployeesCommand)
+            IDictionary<string, string> arguments,
+            ICreateTableCommand createTableCommand,
+            IAddEmployeeCommand<EmployeeInputModel> addEmployeeCommand,
+            IListEmployeesCommand<IAsyncEnumerable<Employee>> listEmployeesCommand,
+            IFillDatabaseCommand<IAsyncEnumerable<IEnumerable<Employee>>> fillDatabaseCommand,
+            IFilterEmployeesCommand<EmployeeFilterCriteria, IEnumerable<Employee>> filterEmployeesCommand)
         {
             _arguments = arguments;
             _createTableCommand = createTableCommand;
@@ -85,7 +86,7 @@ namespace EmployeeCatalog.ConsoleApp
         /// </summary>
         private async Task RunCreateTable()
         {
-            await _createTableCommand.ExecuteAsync();
+            await _createTableCommand.CreateTableAsync();
             Console.WriteLine("Command 'create table' executed.");
         }
 
@@ -106,7 +107,7 @@ namespace EmployeeCatalog.ConsoleApp
                 BirthDate = _arguments["birthDate"]
             };
 
-            await _addEmployeeCommand.ExecuteAsync(inputModel);
+            await _addEmployeeCommand.AddEmployeeWithEventAsync(inputModel);
         }
 
         /// <summary>
@@ -114,7 +115,7 @@ namespace EmployeeCatalog.ConsoleApp
         /// </summary>
         private async Task RunListEmployees()
         {
-            IAsyncEnumerable<Employee> employeesStream = await _listEmployeesCommand.ExecuteAsync();
+            IAsyncEnumerable<Employee> employeesStream = await _listEmployeesCommand.GetAllStreamingAsync();
 
             await foreach (var employee in employeesStream)
                 PrintEmployee(employee);
@@ -138,7 +139,7 @@ namespace EmployeeCatalog.ConsoleApp
 
             var dataGenerator = new EmployeeDataGenerator();
 
-            await _fillDatabaseCommand.ExecuteAsync(dataGenerator.GenerateEmployees(count, 100));
+            await _fillDatabaseCommand.BulkInsertAsync(dataGenerator.GenerateEmployees(count, 100));
         }
 
         /// <summary>
@@ -163,7 +164,7 @@ namespace EmployeeCatalog.ConsoleApp
             var stopwatch = new Stopwatch();
             stopwatch.Start();
 
-            var employees = await _filterEmployeesCommand.ExecuteAsync(criteria);
+            var employees = await _filterEmployeesCommand.GetByFilterAsync(criteria);
 
             stopwatch.Stop();
 

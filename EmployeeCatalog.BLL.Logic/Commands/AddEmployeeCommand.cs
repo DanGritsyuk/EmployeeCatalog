@@ -5,7 +5,7 @@ using EmployeeCatalog.DAL.Repository.Contracts;
 
 namespace EmployeeCatalog.BLL.Logic.Commands
 {
-    public class AddEmployeeCommand : ICommandWithArgs<EmployeeInputModel>
+    public class AddEmployeeCommand : IAddEmployeeCommand<EmployeeInputModel>
     {
         private readonly IEmployeeRepository _employeeRepository;
 
@@ -14,7 +14,7 @@ namespace EmployeeCatalog.BLL.Logic.Commands
             _employeeRepository = employeeRepository;
         }
 
-        public async Task ExecuteAsync(EmployeeInputModel inputModel)
+        public async Task AddEmployeeWithEventAsync(EmployeeInputModel inputModel)
         {
             var employee = new Employee();
             employee.Map(inputModel);

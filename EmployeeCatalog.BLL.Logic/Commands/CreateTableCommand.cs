@@ -3,7 +3,7 @@ using EmployeeCatalog.DAL.Repository.Contracts;
 
 namespace EmployeeCatalog.BLL.Logic.Commands
 {
-    public class CreateTableCommand : ICommand
+    public class CreateTableCommand : ICreateTableCommand
     {
         private readonly IEmployeeRepository _employeeRepository;
 
@@ -12,7 +12,7 @@ namespace EmployeeCatalog.BLL.Logic.Commands
             _employeeRepository = employeeRepository;
         }
 
-        public async Task ExecuteAsync() =>
+        public async Task CreateTableAsync() =>
             await _employeeRepository.CreateTableAsync();
     }
 }

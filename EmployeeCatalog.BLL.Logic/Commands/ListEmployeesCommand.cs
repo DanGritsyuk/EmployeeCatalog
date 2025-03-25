@@ -4,7 +4,7 @@ using EmployeeCatalog.DAL.Repository.Contracts;
 
 namespace EmployeeCatalog.BLL.Logic.Commands
 {
-    public class ListEmployeesCommand : ICommandWithResult<IAsyncEnumerable<Employee>>
+    public class ListEmployeesCommand : IListEmployeesCommand<IAsyncEnumerable<Employee>>
     {
         private readonly IEmployeeRepository _employeeRepository;
 
@@ -13,7 +13,7 @@ namespace EmployeeCatalog.BLL.Logic.Commands
             _employeeRepository = employeeRepository;
         }
 
-        public async Task<IAsyncEnumerable<Employee>> ExecuteAsync()
+        public async Task<IAsyncEnumerable<Employee>> GetAllStreamingAsync()
         {
             try
             {
